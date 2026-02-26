@@ -28,7 +28,12 @@ const Login = () => {
              if(data.success){
                setIsLoggedin(true)
                getUserData()
-                navigate('/')
+               // Clear form fields
+               setName('')
+               setEmail('')
+               setPassword('')
+               toast.success('Account created successfully!')
+               navigate('/')
              }else{
               toast.error(data.message)
              }
@@ -39,7 +44,11 @@ const Login = () => {
              if(data.success){
                setIsLoggedin(true)
                getUserData()
-                navigate('/')
+               // Clear form fields
+               setEmail('')
+               setPassword('')
+               toast.success('Logged in successfully!')
+               navigate('/')
              }else{
               toast.error(data.message)
              }
