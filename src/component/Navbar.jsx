@@ -44,11 +44,11 @@ const Navbar = () => {
          <div className='w-8 h-8 flex justify-center items-center rounded-full bg-black text-white relative group'>
           {userData.name[0].toUpperCase()}
           <div className=' absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-10'>
-             <ul className='list-none m-0 bg-gray-100 text:sm'>
+             <ul className='list-none m-0 bg-gray-100 text-sm'>
               {!userData.isAccountVerified &&  
-              <li onClick={sendVerificationOtp} className='py-1 px-2 hover:bg-gray-200 cursor-pointer pr-10'>Verify email</li> }
+              <li onClick={(e) => { e.stopPropagation(); sendVerificationOtp(); }} className='py-1 px-2 hover:bg-gray-200 cursor-pointer pr-10 whitespace-nowrap'>Verify email</li> }
              
-              <li onClick={logout} className='py-1 px-2 hover:bg-gray-200 cursor-pointer pr-10'>Logout</li>
+              <li onClick={(e) => { e.stopPropagation(); logout(); }} className='py-1 px-2 hover:bg-gray-200 cursor-pointer pr-10 whitespace-nowrap'>Logout</li>
              </ul>
           </div>
         </div> :
