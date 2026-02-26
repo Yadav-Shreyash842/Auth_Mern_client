@@ -24,7 +24,10 @@ export const AppContextProvider = (props) => {
             }
             
         } catch (error) {
-            toast.error(error.response?.data?.message || error.message)
+            // Don't show error for 401 (user not logged in) - this is expected
+            if (error.response?.status !== 401) {
+                toast.error(error.response?.data?.message || error.message)
+            }
         }
     }
 
@@ -33,7 +36,10 @@ export const AppContextProvider = (props) => {
             const {data} = await axios.get(backendUrl + '/api/user/data')
             data.success ? setUserData(data.userData) : toast.error(data.message)
         } catch (error){
-            toast.error(error.response?.data?.message || error.message)
+            // Don't show error for 401 (user not logged in) - this is expected
+            if (error.response?.status !== 401) {
+                toast.error(error.response?.data?.message || error.message)
+            }
         }
     }
 
