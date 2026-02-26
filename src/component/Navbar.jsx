@@ -21,7 +21,13 @@ const Navbar = () => {
           toast.error(data.message)
         }
       } catch (error) {
-        toast.error(error.response?.data?.message || error.message)
+        // Handle authentication errors specifically
+        if (error.response?.status === 401) {
+          toast.error('Please login again to verify your email')
+          navigate('/login')
+        } else {
+          toast.error(error.response?.data?.message || error.message)
+        }
       }
     }
    

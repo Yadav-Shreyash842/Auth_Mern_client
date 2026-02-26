@@ -57,14 +57,25 @@ const EmailVerify = () => {
                 toast.error(data.message)
               }
         } catch (error) {
-           toast.error(error.message)
-          
+           // Handle authentication errors
+           if (error.response?.status === 401) {
+             toast.error('Session expired. Please login again.')
+             navigate('/login')
+           } else {
+             toast.error(error.response?.data?.message || error.message)
+           }
         }
   }
 
    useEffect(() => {
-    isLoggedin && userData && userData.isAccountVerified && navigate('/')
-
+    // If user is logged in and account is already verified, redirect to home
+    if (isLoggedin && userData && userData.isAccountVerified) {
+      navigate('/')
+    }
+    // If not logged in at all, redirect to login
+    if (!isLoggedin && userData === false) {
+      navigate('/login')
+    }
    },[isLoggedin , userData])
    
 
