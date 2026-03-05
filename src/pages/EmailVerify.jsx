@@ -72,14 +72,18 @@ const EmailVerify = () => {
       const otpArray = inputRefs.current.map(e => e.value)
 
       const otp = otpArray.join('')
+      
+      console.log('✅ [VERIFY] Verifying OTP:', otp);
 
       const {data} = await axios.post(
 
-        backendUrl + '/auth/verify-account',
+        backendUrl + '/api/auth/verify-account',
 
         {otp}
 
       )
+      
+      console.log('📨 [VERIFY] Response:', data);
 
       if(data.success){
 
@@ -96,6 +100,9 @@ const EmailVerify = () => {
       }
 
     } catch (error) {
+      
+      console.error('❌ [VERIFY] Error:', error);
+      console.error('Error details:', error.response?.data);
 
       if (error.response?.status === 401) {
 

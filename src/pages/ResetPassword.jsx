@@ -74,14 +74,18 @@ const ResetPassword = () => {
     e.preventDefault()
 
     try {
+      
+      console.log('🔑 [RESET] Sending reset OTP to:', email);
 
       const {data} = await axios.post(
 
-        backendUrl + '/auth/send-reset-otp',
+        backendUrl + '/api/auth/send-reset-otp',
 
         {email}
 
       )
+      
+      console.log('📨 [RESET] Response:', data);
 
       if(data.success){
 
@@ -96,6 +100,9 @@ const ResetPassword = () => {
       }
 
     } catch (error) {
+      
+      console.error('❌ [RESET] Error sending OTP:', error);
+      console.error('Error details:', error.response?.data);
 
       toast.error(error.response?.data?.message || error.message)
 
@@ -122,14 +129,18 @@ const ResetPassword = () => {
     e.preventDefault()
 
     try {
+      
+      console.log('🔐 [RESET] Resetting password for:', email);
 
       const {data} = await axios.post(
 
-        backendUrl + '/auth/reset-password',
+        backendUrl + '/api/auth/reset-password',
 
         {email , otp , newPassword}
 
       )
+      
+      console.log('📨 [RESET] Response:', data);
 
       if(data.success){
 
@@ -144,6 +155,9 @@ const ResetPassword = () => {
       }
 
     } catch (error) {
+      
+      console.error('❌ [RESET] Error resetting password:', error);
+      console.error('Error details:', error.response?.data);
 
       toast.error(error.response?.data?.message || error.message)
 
