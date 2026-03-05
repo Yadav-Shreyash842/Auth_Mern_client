@@ -17,21 +17,34 @@ export const AppContextProvider = (props) => {
     console.log('Backend URL:', backendUrl);
 
     axios.defaults.withCredentials = true;
+    
+    // Add axios interceptor to handle 401 errors gracefully
+    axios.interceptors.response.use(
+        response => response,
+        error => {
+            // Silently handle 401 errors (user not logged in is expected)
+            if (error.response?.status === 401) {
+                // Don't log 401 errors - they're expected when not logged in
+                return Promise.reject(error);
+            }
+            return Promise.reject(error);
+        }
+    );
 
     const getAuthState = async()=> {
         try {
-            console.log('Checking auth state...');
             const {data} = await axios.get(backendUrl + '/api/auth/is-auth')
             if(data.success){
-                console.log('User is authenticated');
                 setIsLoggedin(true)
                 getUserData()
             }
             
         } catch (error) {
-            console.log('Auth check failed:', error.response?.status);
-            // Don't show error for 401 (user not logged in) - this is expected
-            if (error.response?.status !== 401) {
+            // 401 is expected when user is not logged in - don't show error
+            if (error.response?.status === 401) {
+                setIsLoggedin(false);
+                setUserData(false);
+            } else {
                 console.error('Auth check error:', error);
                 toast.error(error.response?.data?.message || error.message)
             }
@@ -40,17 +53,14 @@ export const AppContextProvider = (props) => {
 
     const getUserData = async ()=> {
         try {
-            console.log('Fetching user data...');
             const {data} = await axios.get(backendUrl + '/api/user/data')
             if(data.success) {
-                console.log('User data received:', data.userData);
                 setUserData(data.userData)
             } else {
                 toast.error(data.message)
             }
         } catch (error){
-            console.log('Get user data failed:', error.response?.status);
-            // Don't show error for 401 (user not logged in) - this is expected
+            // 401 is expected when user is not logged in - don't show error
             if (error.response?.status !== 401) {
                 console.error('Get user data error:', error);
                 toast.error(error.response?.data?.message || error.message)
