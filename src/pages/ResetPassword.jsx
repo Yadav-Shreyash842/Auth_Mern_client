@@ -51,29 +51,54 @@ const ResetPassword = () => {
       const onSumbitEmail = async (e) => {
     e.preventDefault();
     try {
+       console.log('Sending reset OTP to:', email);
        const {data} = await axios.post(backendUrl + '/api/auth/send-reset-otp',{email})
-       data.success ? toast.success(data.message) : toast.error (data.message)
-       data.success && setIsEmailSent(true)
+       if(data.success) {
+         toast.success(data.message)
+         setIsEmailSent(true)
+       } else {
+         toast.error(data.message)
+       }
     } catch (error) {
-      toast.error(error.message)
+      console.error('Reset OTP error:', error);
+      toast.error(error.response?.data?.message || error.message)
     }
       }
 
       const onSumbitOtp = async (e) => {
         e.preventDefault();
         const otpArray = inputRefs.current.map (e => e.value)
-        setOtp(otpArray.join(''))
+        const otpValue = otpArray.join('')
+        
+        if (otpValue.length !== 6) {
+          toast.error('Please enter a 6-digit OTP');
+          return;
+        }
+        
+        setOtp(otpValue)
         setIsOtpSubmited(true)
       }
 
       const onSubmitNewPassword = async (e) => {
         e.preventDefault();
+        
+        if (newPassword.length < 6) {
+          toast.error('Password must be at least 6 characters long');
+          return;
+        }
+        
         try {
+          console.log('Resetting password for:', email);
           const {data} = await axios.post(backendUrl + '/api/auth/reset-password', {email , otp , newPassword})
-          data.success ? toast.success(data.message) : toast.error (data.message)
-          data.success && navigate('/login')
+          if(data.success) {
+            toast.success(data.message)
+            navigate('/login')
+          } else {
+            toast.error(data.message)
+          }
         } catch (error) {
-          toast.error(error.message)
+          console.error('Reset password error:', error);
+          toast.error(error.response?.data?.message || error.message)
         }
       }
     

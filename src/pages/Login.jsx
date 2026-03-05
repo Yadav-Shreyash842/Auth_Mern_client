@@ -19,9 +19,22 @@ const Login = () => {
     const onSubmitHandler = async (e) => {
         try {
           e.preventDefault();
+          
+          // Basic validation
+          if(state === "Sign Up" && name.trim().length < 2) {
+              toast.error('Name must be at least 2 characters long');
+              return;
+          }
+          
+          if(password.length < 6) {
+              toast.error('Password must be at least 6 characters long');
+              return;
+          }
+          
           axios.defaults.withCredentials = true
 
           if(state ==="Sign Up"){
+            console.log('Registering user:', { name, email });
             const {data} =  await axios.post(backendUrl + '/api/auth/register', {
               name, email , password
              })
@@ -38,6 +51,7 @@ const Login = () => {
               toast.error(data.message)
              }
           }else{
+            console.log('Logging in user:', { email });
             const {data} =  await axios.post(backendUrl + '/api/auth/login', {
                email , password
              })
@@ -55,7 +69,9 @@ const Login = () => {
 
           }
         } catch (error) {
-           toast.error(error.response?.data?.message || error.message)
+           console.error('Auth error:', error);
+           const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
+           toast.error(errorMessage)
         }
     }
 
