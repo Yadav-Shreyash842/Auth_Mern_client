@@ -7,82 +7,98 @@ export const AppContext = createContext()
 export const AppContextProvider = (props) => {
 
     axios.defaults.withCredentials = true;
-    
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL
+
     const [isLoggedin , setIsLoggedin] = useState(false);
     const [userData , setUserData] = useState(false)
-
-    // Log backend URL for debugging
-    console.log('Backend URL:', backendUrl);
-
-    axios.defaults.withCredentials = true;
     
-    // Add axios interceptor to handle 401 errors gracefully
-    axios.interceptors.response.use(
-        response => response,
-        error => {
-            // Silently handle 401 errors (user not logged in is expected)
-            if (error.response?.status === 401) {
-                // Don't log 401 errors - they're expected when not logged in
-                return Promise.reject(error);
-            }
-            return Promise.reject(error);
-        }
-    );
+    console.log('🔗 Backend URL:', backendUrl);
 
     const getAuthState = async()=> {
+
         try {
-            const {data} = await axios.get(backendUrl + '/api/auth/is-auth')
+
+            const {data} = await axios.get(
+                backendUrl + '/api/auth/is-auth'
+            )
+
             if(data.success){
+                console.log('✅ User is authenticated');
                 setIsLoggedin(true)
+
                 getUserData()
+
             }
-            
+
         } catch (error) {
-            // 401 is expected when user is not logged in - don't show error
-            if (error.response?.status === 401) {
-                setIsLoggedin(false);
-                setUserData(false);
-            } else {
-                console.error('Auth check error:', error);
+
+            if (error.response?.status !== 401) {
+                console.error('❌ Auth check error:', error.response?.data || error.message);
                 toast.error(error.response?.data?.message || error.message)
+
+            } else {
+                console.log('ℹ️ User not authenticated (expected)');
             }
+
         }
+
     }
 
     const getUserData = async ()=> {
+
         try {
-            const {data} = await axios.get(backendUrl + '/api/user/data')
-            if(data.success) {
+
+            const {data} = await axios.get(
+                backendUrl + '/api/user/data'
+            )
+
+            if(data.success){
+                console.log('✅ User data received:', data.userData.name);
                 setUserData(data.userData)
-            } else {
+
+            }else{
+
                 toast.error(data.message)
+
             }
+
         } catch (error){
-            // 401 is expected when user is not logged in - don't show error
+
             if (error.response?.status !== 401) {
-                console.error('Get user data error:', error);
+                console.error('❌ Get user data error:', error.response?.data || error.message);
                 toast.error(error.response?.data?.message || error.message)
+
             }
+
         }
+
     }
 
    useEffect (() => {
+
      getAuthState();
+
    },[])
-    
-  
+
      const value = {
+
          backendUrl,
-         isLoggedin, setIsLoggedin,
-         userData,  setUserData,
+         isLoggedin,
+         setIsLoggedin,
+         userData,
+         setUserData,
          getUserData,
+
      }
 
     return (
+
         <AppContext.Provider value={value}>
+
             {props.children}
+
         </AppContext.Provider>
+
     )
 }

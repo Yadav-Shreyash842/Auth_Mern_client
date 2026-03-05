@@ -19,26 +19,18 @@ const Login = () => {
     const onSubmitHandler = async (e) => {
         try {
           e.preventDefault();
-          
-          // Basic validation
-          if(state === "Sign Up" && name.trim().length < 2) {
-              toast.error('Name must be at least 2 characters long');
-              return;
-          }
-          
-          if(password.length < 6) {
-              toast.error('Password must be at least 6 characters long');
-              return;
-          }
-          
           axios.defaults.withCredentials = true
+          
+          console.log('📝 Form submission:', state, 'Email:', email);
 
           if(state ==="Sign Up"){
-            console.log('Registering user:', { name, email });
+            console.log('🆕 Registering user...');
             const {data} =  await axios.post(backendUrl + '/api/auth/register', {
               name, email , password
              })
+             console.log('📨 Registration response:', data);
              if(data.success){
+               console.log('✅ Registration successful!');
                setIsLoggedin(true)
                getUserData()
                // Clear form fields
@@ -48,14 +40,17 @@ const Login = () => {
                toast.success('Account created successfully!')
                navigate('/')
              }else{
+              console.log('❌ Registration failed:', data.message);
               toast.error(data.message)
              }
           }else{
-            console.log('Logging in user:', { email });
+            console.log('🔐 Logging in user...');
             const {data} =  await axios.post(backendUrl + '/api/auth/login', {
                email , password
              })
+             console.log('📨 Login response:', data);
              if(data.success){
+               console.log('✅ Login successful!');
                setIsLoggedin(true)
                getUserData()
                // Clear form fields
@@ -64,14 +59,15 @@ const Login = () => {
                toast.success('Logged in successfully!')
                navigate('/')
              }else{
+              console.log('❌ Login failed:', data.message);
               toast.error(data.message)
              }
 
           }
         } catch (error) {
-           console.error('Auth error:', error);
-           const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
-           toast.error(errorMessage)
+           console.error('❌ Auth error:', error);
+           console.error('Error response:', error.response?.data);
+           toast.error(error.response?.data?.message || error.message)
         }
     }
 
