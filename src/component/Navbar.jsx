@@ -12,15 +12,30 @@ const Navbar = () => {
 
     const sendVerificationOtp = async ()=> {
       try {
+        console.log('📧 [NAVBAR] Requesting verification OTP...');
+        console.log('🔗 Backend URL:', backendUrl);
+        console.log('👤 User data:', userData);
+        
         axios.defaults.withCredentials = true;
         const {data} = await axios.post(backendUrl + '/api/auth/send-verify-otp')
+        
+        console.log('📨 [NAVBAR] OTP Response:', data);
+        
         if(data.success){
-          navigate('/email-verify')
           toast.success(data.message)
+          console.log('✅ [NAVBAR] OTP sent successfully, navigating to verify page...');
+          // Small delay to ensure toast is visible
+          setTimeout(() => {
+            navigate('/email-verify')
+          }, 500);
         } else{
+          console.log('❌ [NAVBAR] OTP sending failed:', data.message);
           toast.error(data.message)
         }
       } catch (error) {
+        console.error('❌ [NAVBAR] Error sending verification OTP:', error);
+        console.error('Error response:', error.response?.data);
+        
         // Handle authentication errors specifically
         if (error.response?.status === 401) {
           toast.error('Please login again to verify your email')

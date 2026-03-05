@@ -14,6 +14,8 @@ const EmailVerify = () => {
   const navigate = useNavigate()
 
   const inputRefs = React.useRef([])
+  
+  const [isResending, setIsResending] = React.useState(false)
 
   const handleInput = (e , index) => {
 
@@ -119,20 +121,64 @@ const EmailVerify = () => {
     }
 
   }
+  
+  const resendOtp = async () => {
+    try {
+      setIsResending(true);
+      console.log('🔄 [EMAIL-VERIFY] Resending OTP...');
+      
+      const {data} = await axios.post(backendUrl + '/api/auth/send-verify-otp');
+      
+      console.log('📨 [EMAIL-VERIFY] Resend response:', data);
+      
+      if(data.success){
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error('❌ [EMAIL-VERIFY] Resend error:', error);
+      
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again.');
+        navigate('/login');
+      } else {
+        toast.error(error.response?.data?.message || error.message);
+      }
+    } finally {
+      setIsResending(false);
+    }
+  }
 
   useEffect(() => {
+    
+    console.log('🔍 [EMAIL-VERIFY] useEffect triggered');
+    console.log('isLoggedin:', isLoggedin);
+    console.log('userData:', userData);
 
-    if (isLoggedin && userData?.isAccountVerified) {
-
+    // If user is already verified, redirect to home
+    if (isLoggedin && userData && userData.isAccountVerified) {
+      console.log('✅ [EMAIL-VERIFY] User already verified, redirecting home...');
+      toast.info('Your email is already verified!');
       navigate('/')
-
+      return;
     }
 
+    // If not logged in, redirect to login
     if (!isLoggedin) {
-
+      console.log('❌ [EMAIL-VERIFY] User not logged in, redirecting to login...');
+      toast.error('Please login first');
       navigate('/login')
-
+      return;
     }
+    
+    // If logged in but userData not loaded yet, wait
+    if (isLoggedin && !userData) {
+      console.log('⏳ [EMAIL-VERIFY] Waiting for user data to load...');
+      return;
+    }
+    
+    console.log('✅ [EMAIL-VERIFY] Ready for OTP verification');
 
   },[isLoggedin , userData , navigate])
 
@@ -174,6 +220,15 @@ const EmailVerify = () => {
 
         <button className='w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full'>
           Verify Email
+        </button>
+        
+        <button 
+          type="button"
+          onClick={resendOtp}
+          disabled={isResending}
+          className='w-full mt-3 py-2 text-indigo-300 hover:text-indigo-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed'
+        >
+          {isResending ? 'Resending...' : 'Resend OTP'}
         </button>
 
       </form>
