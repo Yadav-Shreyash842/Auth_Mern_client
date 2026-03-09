@@ -178,7 +178,7 @@ const ResetPassword = () => {
 
   return (
 
-    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400'>
+    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-linear-to-br from-blue-200 to-purple-400'>
 
       <img onClick={() => navigate('/')} src={assets.logo} alt="" className='absolute left-5 sm:left-20 top-5 sm:w-32 cursor-pointer' />
 
@@ -199,7 +199,7 @@ const ResetPassword = () => {
 
           </div>
 
-          <button className='w-full py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full mt-3'>Submit</button>
+          <button className='w-full py-2.5 bg-linear-to-r from-indigo-500 to-indigo-900 text-white rounded-full mt-3'>Submit</button>
 
         </form>
 
@@ -231,7 +231,7 @@ const ResetPassword = () => {
 
           </div>
 
-          <button className='w-full py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full'>Submit</button>
+          <button className='w-full py-2.5 bg-linear-to-r from-indigo-500 to-indigo-900 text-white rounded-full'>Submit</button>
 
         </form>
 
@@ -254,7 +254,7 @@ const ResetPassword = () => {
 
           </div>
 
-          <button className='w-full py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full mt-3'>Submit</button>
+          <button className='w-full py-2.5 bg-linear-to-r from-indigo-500 to-indigo-900 text-white rounded-full mt-3'>Submit</button>
 
         </form>
 
