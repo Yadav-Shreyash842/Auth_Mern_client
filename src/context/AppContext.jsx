@@ -12,8 +12,6 @@ export const AppContextProvider = (props) => {
 
     const [isLoggedin , setIsLoggedin] = useState(false);
     const [userData , setUserData] = useState(false)
-    
-    console.log('🔗 Backend URL:', backendUrl);
 
     const getAuthState = async()=> {
 
@@ -24,7 +22,6 @@ export const AppContextProvider = (props) => {
             )
 
             if(data.success){
-                console.log('✅ User is authenticated');
                 setIsLoggedin(true)
 
                 getUserData()
@@ -34,11 +31,8 @@ export const AppContextProvider = (props) => {
         } catch (error) {
 
             if (error.response?.status !== 401) {
-                console.error('❌ Auth check error:', error.response?.data || error.message);
                 toast.error(error.response?.data?.message || error.message)
 
-            } else {
-                console.log('ℹ️ User not authenticated (expected)');
             }
 
         }
@@ -54,7 +48,6 @@ export const AppContextProvider = (props) => {
             )
 
             if(data.success){
-                console.log('✅ User data received:', data.userData.name);
                 setUserData(data.userData)
 
             }else{
@@ -66,7 +59,6 @@ export const AppContextProvider = (props) => {
         } catch (error){
 
             if (error.response?.status !== 401) {
-                console.error('❌ Get user data error:', error.response?.data || error.message);
                 toast.error(error.response?.data?.message || error.message)
 
             }

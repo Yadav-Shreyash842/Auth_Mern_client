@@ -16,6 +16,7 @@ const EmailVerify = () => {
   const inputRefs = React.useRef([])
   
   const [isResending, setIsResending] = React.useState(false)
+  const [otpSent, setOtpSent] = React.useState(false)
 
   const handleInput = (e , index) => {
 
@@ -74,8 +75,6 @@ const EmailVerify = () => {
       const otpArray = inputRefs.current.map(e => e.value)
 
       const otp = otpArray.join('')
-      
-      console.log('✅ [VERIFY] Verifying OTP:', otp);
 
       const {data} = await axios.post(
 
@@ -84,8 +83,6 @@ const EmailVerify = () => {
         {otp}
 
       )
-      
-      console.log('📨 [VERIFY] Response:', data);
 
       if(data.success){
 
@@ -102,9 +99,6 @@ const EmailVerify = () => {
       }
 
     } catch (error) {
-      
-      console.error('❌ [VERIFY] Error:', error);
-      console.error('Error details:', error.response?.data);
 
       if (error.response?.status === 401) {
 
@@ -125,11 +119,8 @@ const EmailVerify = () => {
   const resendOtp = async () => {
     try {
       setIsResending(true);
-      console.log('🔄 [EMAIL-VERIFY] Resending OTP...');
       
       const {data} = await axios.post(backendUrl + '/api/auth/send-verify-otp');
-      
-      console.log('📨 [EMAIL-VERIFY] Resend response:', data);
       
       if(data.success){
         toast.success(data.message);
@@ -137,7 +128,6 @@ const EmailVerify = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      console.error('❌ [EMAIL-VERIFY] Resend error:', error);
       
       if (error.response?.status === 401) {
         toast.error('Session expired. Please login again.');
@@ -151,14 +141,9 @@ const EmailVerify = () => {
   }
 
   useEffect(() => {
-    
-    console.log('🔍 [EMAIL-VERIFY] useEffect triggered');
-    console.log('isLoggedin:', isLoggedin);
-    console.log('userData:', userData);
 
     // If user is already verified, redirect to home
     if (isLoggedin && userData && userData.isAccountVerified) {
-      console.log('✅ [EMAIL-VERIFY] User already verified, redirecting home...');
       toast.info('Your email is already verified!');
       navigate('/')
       return;
@@ -166,7 +151,6 @@ const EmailVerify = () => {
 
     // If not logged in, redirect to login
     if (!isLoggedin) {
-      console.log('❌ [EMAIL-VERIFY] User not logged in, redirecting to login...');
       toast.error('Please login first');
       navigate('/login')
       return;
@@ -174,13 +158,33 @@ const EmailVerify = () => {
     
     // If logged in but userData not loaded yet, wait
     if (isLoggedin && !userData) {
-      console.log('⏳ [EMAIL-VERIFY] Waiting for user data to load...');
       return;
     }
-    
-    console.log('✅ [EMAIL-VERIFY] Ready for OTP verification');
 
-  },[isLoggedin , userData , navigate])
+    // Auto-send OTP when page loads (only once)
+    if (isLoggedin && userData && !userData.isAccountVerified && !otpSent) {
+      sendOtpOnLoad();
+    }
+
+  },[isLoggedin , userData , navigate, otpSent])
+
+  const sendOtpOnLoad = async () => {
+    try {
+      const {data} = await axios.post(backendUrl + '/api/auth/send-verify-otp');
+      if(data.success){
+        setOtpSent(true);
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        navigate('/login');
+      } else {
+        toast.error(error.response?.data?.message || 'Failed to send OTP');
+      }
+    }
+  }
 
   return (
 

@@ -74,8 +74,6 @@ const ResetPassword = () => {
     e.preventDefault()
 
     try {
-      
-      console.log('🔑 [RESET] Sending reset OTP to:', email);
 
       const {data} = await axios.post(
 
@@ -84,8 +82,6 @@ const ResetPassword = () => {
         {email}
 
       )
-      
-      console.log('📨 [RESET] Response:', data);
 
       if(data.success){
 
@@ -100,9 +96,6 @@ const ResetPassword = () => {
       }
 
     } catch (error) {
-      
-      console.error('❌ [RESET] Error sending OTP:', error);
-      console.error('Error details:', error.response?.data);
 
       toast.error(error.response?.data?.message || error.message)
 
@@ -117,8 +110,6 @@ const ResetPassword = () => {
     const otpArray = inputRefs.current.map (e => e.value)
 
     const finalOtp = otpArray.join('')
-    
-    console.log('🔢 [RESET] OTP entered:', finalOtp);
 
     // Set OTP state immediately before advancing
     setOtp(finalOtp)
@@ -139,9 +130,6 @@ const ResetPassword = () => {
     const currentOtp = otpArray.join('')
 
     try {
-      
-      console.log('🔐 [RESET] Resetting password for:', email);
-      console.log('🔢 [RESET] Using OTP:', currentOtp);
 
       const {data} = await axios.post(
 
@@ -150,8 +138,6 @@ const ResetPassword = () => {
         {email , otp: currentOtp , newPassword}
 
       )
-      
-      console.log('📨 [RESET] Response:', data);
 
       if(data.success){
 
@@ -166,9 +152,6 @@ const ResetPassword = () => {
       }
 
     } catch (error) {
-      
-      console.error('❌ [RESET] Error resetting password:', error);
-      console.error('Error details:', error.response?.data);
 
       toast.error(error.response?.data?.message || error.message)
 
