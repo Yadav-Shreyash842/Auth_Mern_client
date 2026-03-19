@@ -16,7 +16,6 @@ const EmailVerify = () => {
   const inputRefs = React.useRef([])
   
   const [isResending, setIsResending] = React.useState(false)
-  const [otpSent, setOtpSent] = React.useState(false)
 
   const handleInput = (e , index) => {
 
@@ -142,49 +141,21 @@ const EmailVerify = () => {
 
   useEffect(() => {
 
-    // If user is already verified, redirect to home
+    // Wait until userData is loaded before making redirect decisions
+    if (!userData && !isLoggedin) return;
+
     if (isLoggedin && userData && userData.isAccountVerified) {
       toast.info('Your email is already verified!');
-      navigate('/')
+      navigate('/');
       return;
     }
 
-    // If not logged in, redirect to login
-    if (!isLoggedin) {
+    if (userData && !isLoggedin) {
       toast.error('Please login first');
-      navigate('/login')
-      return;
-    }
-    
-    // If logged in but userData not loaded yet, wait
-    if (isLoggedin && !userData) {
-      return;
+      navigate('/login');
     }
 
-    // Auto-send OTP when page loads (only once)
-    if (isLoggedin && userData && !userData.isAccountVerified && !otpSent) {
-      sendOtpOnLoad();
-    }
-
-  },[isLoggedin , userData , navigate, otpSent])
-
-  const sendOtpOnLoad = async () => {
-    try {
-      const {data} = await axios.post(backendUrl + '/api/auth/send-verify-otp');
-      if(data.success){
-        setOtpSent(true);
-        toast.success(data.message);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      if (error.response?.status === 401) {
-        navigate('/login');
-      } else {
-        toast.error(error.response?.data?.message || 'Failed to send OTP');
-      }
-    }
-  }
+  }, [isLoggedin, userData, navigate])
 
   return (
 

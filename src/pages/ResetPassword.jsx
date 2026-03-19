@@ -107,17 +107,12 @@ const ResetPassword = () => {
 
     e.preventDefault()
 
-    const otpArray = inputRefs.current.map (e => e.value)
+    const otpArray = inputRefs.current.map(e => e.value)
 
     const finalOtp = otpArray.join('')
 
-    // Set OTP state immediately before advancing
     setOtp(finalOtp)
-    
-    // Small delay to ensure state updates
-    setTimeout(() => {
-      setIsOtpSubmited(true)
-    }, 50)
+    setIsOtpSubmited(true)
 
   }
 
@@ -125,17 +120,13 @@ const ResetPassword = () => {
 
     e.preventDefault()
     
-    // Get OTP directly from inputs to avoid state timing issues
-    const otpArray = inputRefs.current.map (e => e.value)
-    const currentOtp = otpArray.join('')
-
     try {
 
       const {data} = await axios.post(
 
         backendUrl + '/api/auth/reset-password',
 
-        {email , otp: currentOtp , newPassword}
+        {email , otp , newPassword}
 
       )
 

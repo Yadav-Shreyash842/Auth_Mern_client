@@ -12,10 +12,27 @@ const Navbar = () => {
 
     const sendVerificationOtp = async ()=> {
       try {
-        // Just navigate to the email verify page - OTP will be sent automatically
-        navigate('/email-verify')
+        axios.defaults.withCredentials = true;
+        const {data} = await axios.post(backendUrl + '/api/auth/send-verify-otp')
+        
+        if(data.success){
+          toast.success(data.message)
+          // Small delay to ensure toast is visible
+          setTimeout(() => {
+            navigate('/email-verify')
+          }, 500);
+        } else{
+          toast.error(data.message)
+        }
       } catch (error) {
-        toast.error(error.message)
+        
+        // Handle authentication errors specifically
+        if (error.response?.status === 401) {
+          toast.error('Please login again to verify your email')
+          navigate('/login')
+        } else {
+          toast.error(error.response?.data?.message || error.message)
+        }
       }
     }
    
